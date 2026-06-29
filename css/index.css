@@ -1,0 +1,118 @@
+/* ===========================================================================
+   index.css — Página índice del curso + barra de navegación entre bloques.
+   =========================================================================== */
+
+/* --- Variables y reset (comparten la paleta de styles.css) ------------- */
+:root {
+  --bg:         #f1f5f9;
+  --bg-panel:   #ffffff;
+  --border:     #e2e8f0;
+  --text:       #0f172a;
+  --text-muted: #64748b;
+  --shadow:     0 4px 12px rgba(15, 23, 42, .08), 0 2px 4px rgba(15, 23, 42, .04);
+  --radius:     16px;
+  --font:       system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+}
+
+/* --- Hero ------------------------------------------------------------- */
+.hero {
+  text-align: center;
+  padding: 56px 20px 32px;
+}
+.hero h1 { margin: 0; font-size: 2rem; }
+.hero-sub {
+  max-width: 640px;
+  margin: 12px auto 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+/* --- Tarjetas de los bloques ----------------------------------------- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 22px 18px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .14);
+}
+.card-num {
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  align-self: flex-start;
+  margin-bottom: 12px;
+}
+.card-b1 .card-num   { background: #3b82f6; }   /* azul  */
+.card-b2 .card-num   { background: #22c55e; }   /* verde */
+.card-b3 .card-num   { background: #a855f7; }   /* morado */
+.card-soon .card-num { background: #94a3b8; }   /* gris  */
+
+.card h2 { margin: 0 0 8px; font-size: 1.25rem; }
+.card p  { margin: 0 0 16px; color: var(--text-muted); font-size: .94rem; flex: 1; }
+.card-go {
+  font-weight: 700;
+  color: #3b82f6;
+}
+.card-b2 .card-go { color: #22c55e; }
+.card-soon-tag { color: var(--text-muted); }
+
+.index-footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+}
+
+/* --- Barra de navegación entre bloques (compartida por bloque1/2) ----- */
+.block-nav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+.block-nav a {
+  font-size: .85rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background .12s ease, color .12s ease;
+}
+.block-nav a:hover { background: #f1f5f9; color: var(--text); }
+.block-nav a.active {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.block-nav .nav-home { margin-right: 6px; }

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+  bloque2.html — Simulador educativo de la frontera de decisión.
+
+  Estructura de dos columnas (Zona 1 y Zona 2):
+    - css/styles.css   → estilos compartidos y clases del plano.
+    - js/activationFunctions.js → catálogo de funciones.
+    - js/neuron.js     → modelo (clase Neuron, OOP).
+    - js/bloque2.js    → controlador de la vista 2D y el plano cartesiano.
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloque 2 · La Frontera de Decisión</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- KaTeX para renderizado de ecuaciones tipo LaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+</head>
+<body>
+  <!-- ====================================================================
+       Navegación entre bloques del curso.
+       ================================================================= -->
+  <nav class="block-nav">
+    <a href="index.html" class="nav-home">🏠 Inicio</a>
+    <a href="bloque1.html" class="nav-link">Bloque 1 · Neurona</a>
+    <a href="bloque2.html" class="nav-link active">Bloque 2 · Frontera de decisión</a>
+    <a href="bloque3.html" class="nav-link">Bloque 3 · Regla de aprendizaje</a>
+  </nav>
+
+  <!-- ====================================================================
+       Cabecera
+       ================================================================= -->
+  <header class="app-header">
+    <h1>🧠 Bloque 2 · La Frontera de Decisión</h1>
+    <p class="subtitle">
+      Ajusta los pesos y el bias para ver cómo la neurona separa dos clases de puntos en el plano cartesiano.
+    </p>
+  </header>
+
+  <!-- ====================================================================
+       Barra de acciones
+       ================================================================= -->
+  <section class="toolbar">
+    <button id="btn-regenerate" type="button">🎲 Regenerar puntos</button>
+    <button id="btn-reset"     type="button">♻️ Reiniciar pesos</button>
+  </section>
+
+  <!-- ====================================================================
+       Cuerpo principal dividido en dos grandes zonas
+       ================================================================= -->
+  <main class="layout-split">
+
+    <!-- ----------------------------------------------------------------
+         ZONA 1 (Izquierda): Controles, Neurona y Selección de Activación.
+         -------------------------------------------------------------- -->
+    <aside class="col-zona1">
+      
+      <!-- Controles deslizantes (Inputs/Pesos/Bias) -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+        <div class="panel panel-compact">
+          <h2 class="panel-title" style="--accent:#3b82f6">Entradas (x)</h2>
+          <div id="inputs-panel" class="ctrl-list"></div>
+        </div>
+
+        <div class="panel panel-compact">
+          <h2 class="panel-title" style="--accent:#f97316">Pesos (w)</h2>
+          <div id="weights-panel" class="ctrl-list"></div>
+        </div>
+
+        <div class="panel panel-compact">
+          <h2 class="panel-title" style="--accent:#a855f7">Bias (b)</h2>
+          <div id="bias-panel" class="ctrl-list"></div>
+        </div>
+      </div>
+
+      <!-- Salida y Ecuación -->
+      <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; min-height: 120px;">
+        <div class="panel panel-compact output-panel" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <h2 class="panel-title" style="--accent:#ef4444; width: 100%;">Salida (y)</h2>
+          <div class="output-value" id="output-value">—</div>
+          <ul class="output-meta">
+            <li><span>Función:</span> <strong id="output-activation">—</strong></li>
+            <li><span>Net Input:</span> <strong id="output-net">—</strong></li>
+          </ul>
+        </div>
+
+        <div class="panel panel-compact" style="display: flex; flex-direction: column; justify-content: center;">
+          <h2 class="panel-title" style="--accent:#6b7280">Sustitución Numérica</h2>
+          <div id="equation" class="equation" style="font-size: 0.85rem; padding: 6px;"></div>
+          <div id="numeric" class="numeric" style="font-size: 0.82rem; margin-top: 4px;"></div>
+        </div>
+      </div>
+
+      <!-- SVG de la Neurona (2 entradas fijas) -->
+      <div class="panel panel-neuron" style="min-height: 200px; max-height: 240px;">
+        <svg id="neuron-svg" class="neuron-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+
+      <!-- Selector de la función de activación -->
+      <div class="panel panel-compact">
+        <h2 class="panel-title" style="--accent:#22c55e">Función de Activación</h2>
+        <div id="activation-list" class="activation-list" style="max-height: 250px;"></div>
+      </div>
+
+    </aside>
+
+    <!-- ----------------------------------------------------------------
+         ZONA 2 (Derecha): Plano Cartesiano interactivo con la frontera.
+         -------------------------------------------------------------- -->
+    <section class="col-zona2">
+      <div class="panel panel-plane">
+        <h2 class="panel-title" style="--accent:#22c55e">Frontera de decisión: x₁·w₁ + x₂·w₂ + b = 0</h2>
+        <canvas id="plane-canvas" class="plane-canvas"></canvas>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <small>Hecho con HTML + CSS + Vanilla JS · Pensado para comprender la frontera de decisión lineal.</small>
+  </footer>
+
+  <!-- ====================================================================
+       Scripts
+       ================================================================= -->
+  <script src="js/activationFunctions.js"></script>
+  <script src="js/neuron.js"></script>
+  <script src="js/bloque2.js"></script>
+</body>
+</html>

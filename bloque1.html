@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--
+  bloque1.html — Simulador educativo de una neurona (perceptrón).
+
+  Estructura modular:
+    - css/styles.css   → estilos (modo claro, moderno).
+    - js/activationFunctions.js → catálogo de funciones (añadir sin tocar el resto).
+    - js/neuron.js     → modelo (clase Neuron, OOP).
+    - js/ui.js         → vista (construcción dinámica + canvas + SVG neurona).
+    - js/app.js        → controlador (presets, historial, eventos).
+
+  Layout (inspirado en un diagrama tipo editor de nodos):
+    [ Activación (barra lateral izquierda) ]
+    [ Salida ] [ NEURONA (SVG, centro) ] [ Entradas / Pesos / Bias ]
+    [ Ecuación + Sustitución ]
+    [ Gráfica de activación (panel inferior) ]
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloque 1 · Neurona / Perceptrón</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- KaTeX para renderizado de ecuaciones tipo LaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+</head>
+<body>
+  <!-- ====================================================================
+       Navegación entre bloques del curso.
+       ================================================================= -->
+  <nav class="block-nav">
+    <a href="index.html" class="nav-home">🏠 Inicio</a>
+    <a href="bloque1.html" class="nav-link active">Bloque 1 · Neurona</a>
+    <a href="bloque2.html" class="nav-link">Bloque 2 · Frontera de decisión</a>
+    <a href="bloque3.html" class="nav-link">Bloque 3 · Regla de aprendizaje</a>
+  </nav>
+
+  <!-- ====================================================================
+       Cabecera
+       ================================================================= -->
+  <header class="app-header">
+    <h1>🧠 Bloque 1 · Neurona / Perceptrón</h1>
+    <p class="subtitle">
+      Comprende visualmente cómo una neurona transforma las entradas en una salida.
+    </p>
+  </header>
+
+  <!-- ====================================================================
+       Controles globales (acciones deseables)
+       ================================================================= -->
+  <section class="toolbar">
+    <button id="btn-randomize" type="button">🎲 Aleatorizar pesos</button>
+    <button id="btn-reset"     type="button">♻️ Reiniciar</button>
+    <button id="btn-example1"  type="button">📘 Ejemplo 1</button>
+    <button id="btn-example2"  type="button">📙 Ejemplo 2</button>
+    <label class="inputs-count">
+      Nº de entradas:
+      <select id="inputs-count">
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+    </label>
+  </section>
+
+  <!-- ====================================================================
+       Cuerpo principal: barra lateral izquierda + área central.
+       ================================================================= -->
+  <main class="layout">
+
+    <!-- ----------------------------------------------------------------
+         Columna IZQUIERDA: Entradas / Pesos / Bias (controles).
+         -------------------------------------------------------------- -->
+    <aside class="col col-controls">
+      <div class="panel panel-compact">
+        <h2 class="panel-title" style="--accent:#3b82f6">Entradas</h2>
+        <div id="inputs-panel" class="ctrl-list"></div>
+      </div>
+
+      <div class="panel panel-compact">
+        <h2 class="panel-title" style="--accent:#f97316">Pesos</h2>
+        <div id="weights-panel" class="ctrl-list"></div>
+      </div>
+
+      <div class="panel panel-compact">
+        <h2 class="panel-title" style="--accent:#a855f7">Bias</h2>
+        <div id="bias-panel" class="ctrl-list"></div>
+      </div>
+    </aside>
+
+    <!-- ----------------------------------------------------------------
+         Área central: Salida + Neurona + Ecuación + Gráfica.
+         -------------------------------------------------------------- -->
+    <div class="main-area">
+
+      <!-- Fila superior: Salida (izq) + Neurona (centro) -->
+      <div class="row-top">
+
+        <!-- Salida (a la izquierda, compacta) -->
+        <section class="col col-output">
+          <div class="panel panel-compact output-panel">
+            <h2 class="panel-title" style="--accent:#ef4444">Salida</h2>
+            <div class="output-value" id="output-value">—</div>
+            <ul class="output-meta">
+              <li><span>Función:</span> <strong id="output-activation">—</strong></li>
+              <li><span>Net Input:</span> <strong id="output-net">—</strong></li>
+            </ul>
+          </div>
+
+          <div class="panel panel-compact">
+            <h2 class="panel-title" style="--accent:#6b7280">Historial (últ. 20)</h2>
+            <ul id="history-list" class="history-list"></ul>
+          </div>
+        </section>
+
+        <!-- La NEURONA (SVG de nodos circulares) -->
+        <section class="col col-neuron">
+          <div class="panel panel-neuron">
+            <svg id="neuron-svg" class="neuron-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+
+          <!-- Ecuación simbólica + sustitución numérica -->
+          <div class="panel panel-compact">
+            <div id="equation" class="equation"></div>
+            <div id="numeric" class="numeric"></div>
+          </div>
+        </section>
+      </div><!-- /.row-top -->
+
+      <!-- ----------------------------------------------------------------
+           Panel INFERIOR: Gráfica de la función de activación.
+           -------------------------------------------------------------- -->
+      <section class="row-bottom">
+        <div class="panel panel-compact">
+          <h2 class="panel-title" style="--accent:#22c55e">Gráfica de la Función de Activación</h2>
+          <canvas id="graph-canvas" class="graph-canvas"></canvas>
+        </div>
+      </section>
+
+    </div><!-- /.main-area -->
+
+    <!-- ----------------------------------------------------------------
+         Columna DERECHA: Funciones de Activación (selector).
+         -------------------------------------------------------------- -->
+    <aside class="col col-activation">
+      <div class="panel panel-compact">
+        <h2 class="panel-title" style="--accent:#22c55e">Función de Activación</h2>
+        <div id="activation-list" class="activation-list"></div>
+      </div>
+    </aside>
+
+  </main>
+
+  <footer class="app-footer">
+    <small>Hecho con HTML + CSS + Vanilla JS · Pensado para el aprendizaje de redes neuronales.</small>
+  </footer>
+
+  <!-- ====================================================================
+       Scripts (el orden define las dependencias).
+       ================================================================= -->
+  <script src="js/activationFunctions.js"></script>
+  <script src="js/neuron.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

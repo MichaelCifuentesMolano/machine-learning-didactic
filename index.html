@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+  index.html — Curso interactivo de Redes Neuronales.
+  Página MENÚ / índice de los bloques didácticos.
+
+  Cada bloque enseña un concepto fundamental, reutilizando el código modular
+  (js/neuron.js, js/activationFunctions.js, ...).
+
+  Bloques disponibles:
+    - Bloque 1: La neurona / perceptrón (cómo transforma entradas en salida).
+    - Bloque 2: La frontera de decisión (cómo los pesos separan clases).
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curso de Redes Neuronales · Índice</title>
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>🧠 Curso interactivo de Redes Neuronales</h1>
+    <p class="hero-sub">
+      Aprende los conceptos fundamentales visualizando, en tiempo real, lo que
+      ocurre dentro de una neurona y de una red.
+    </p>
+  </header>
+
+  <main class="cards">
+    <!-- Tarjeta del Bloque 1 -->
+    <a href="bloque1.html" class="card card-b1">
+      <div class="card-num">Bloque 1</div>
+      <h2>La Neurona / Perceptrón</h2>
+      <p>
+        Cómo una neurona combina entradas con pesos y bias, aplica una función
+        de activación y produce una salida. Incluye ecuaciones en vivo y la
+        gráfica de cada función.
+      </p>
+      <span class="card-go">Comenzar →</span>
+    </a>
+
+    <!-- Tarjeta del Bloque 2 -->
+    <a href="bloque2.html" class="card card-b2">
+      <div class="card-num">Bloque 2</div>
+      <h2>La Frontera de Decisión</h2>
+      <p>
+        Descubre que los pesos <strong>no son números arbitrarios</strong>:
+        controlan la orientación de la recta que separa dos clases en el plano.
+        Mueve los pesos y observa cómo se inclina la frontera.
+      </p>
+      <span class="card-go">Comenzar →</span>
+    </a>
+
+    <!-- Tarjeta del Bloque 3 -->
+    <a href="bloque3.html" class="card card-b3">
+      <div class="card-num">Bloque 3</div>
+      <h2>La Regla del Perceptrón</h2>
+      <p>
+        Observa cómo la neurona aprende de forma autónoma.
+        Ajusta la tasa de aprendizaje, entrena ejemplos uno a uno o por épocas,
+        y visualiza en tiempo real cómo se desplaza la frontera de decisión.
+      </p>
+      <span class="card-go" style="color: #a855f7;">Comenzar →</span>
+    </a>
+
+    <!-- Tarjeta placeholder de futuros bloques -->
+    <div class="card card-soon">
+      <div class="card-num">Próximamente</div>
+      <h2>Capas y Redes</h2>
+      <p>
+        Más bloques en construcción: capas ocultas, funciones lógicas,
+        entrenamiento con descenso del gradiente y backpropagation.
+      </p>
+      <span class="card-go card-soon-tag">En desarrollo</span>
+    </div>
+  </main>
+
+  <footer class="index-footer">
+    <small>Hecho con HTML + CSS + Vanilla JS · Sin librerías externas.</small>
+  </footer>
+</body>
+</html>
