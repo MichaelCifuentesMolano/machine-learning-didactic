@@ -2,7 +2,7 @@
 
 Un simulador educativo interactivo, visual y modular diseñado en **HTML5, CSS3 y Vanilla JavaScript** (sin frameworks ni librerías pesadas) para aprender y enseñar los fundamentos de las redes neuronales y el aprendizaje automático de manera intuitiva y práctica.
 
-El proyecto está diseñado para funcionar de manera **100% estática y offline**, lo que permite ejecutarlo simplemente haciendo doble clic en el archivo `index.html` en cualquier computadora.
+El proyecto es **100% estático**: basta con hacer doble clic en `index.html` en cualquier computadora. Las ecuaciones se renderizan con KaTeX desde un CDN; sin conexión a internet se muestran en texto plano.
 
 ---
 
@@ -29,6 +29,7 @@ El curso se divide en tres bloques progresivos:
 ### 3. [Bloque 3: La Regla de Aprendizaje del Perceptrón](bloque3.html)
 * **Objetivo:** Aprender cómo la neurona puede aprender de forma autónoma y ajustar sus propios pesos y bias a partir de sus errores.
 * **Características:**
+  * Usa por defecto la función escalón (*Binary Step*), como el perceptrón clásico.
   * Tasa de aprendizaje ($\eta$) configurable mediante controles deslizantes.
   * **Aprender una vez:** Evalúa secuencialmente los puntos del plano, calcula el error ($e = d - y$) y muestra paso a paso las fórmulas de actualización de la regla del perceptrón ($\Delta w_i = \eta \cdot e \cdot x_i$, $\Delta b = \eta \cdot e$) en LaTeX profesional.
   * **Entrenar época:** Ejecuta el entrenamiento de forma animada en todo el conjunto de datos, permitiendo visualizar literalmente cómo la frontera de decisión se ajusta sola hasta lograr separar las clases.
@@ -49,7 +50,7 @@ El curso se divide en tres bloques progresivos:
 
 1. Descarga o clona este repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/machine-learning-didactic.git
+   git clone https://github.com/MichaelCifuentesMolano/machine-learning-didactic.git
    ```
 2. Ve al directorio del proyecto y abre el archivo `index.html` haciendo doble clic en él o arrastrándolo a cualquier navegador web moderno (Chrome, Firefox, Safari, Edge).
 

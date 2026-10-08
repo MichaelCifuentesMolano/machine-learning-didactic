@@ -497,8 +497,6 @@
     const w1 = neuron.weights[0];
     const w2 = neuron.weights[1];
     const b = neuron.bias;
-    const meta = neuron.activationMeta;
-    const r = meta.range;
 
     for (let i = 0; i < gridCount; i++) {
       const px = padL + i * cellW;
@@ -508,9 +506,8 @@
         const y = yMin + (j + 0.5) * (yMax - yMin) / gridCount;
 
         const net = x * w1 + y * w2 + b;
-        const out = meta.fn(net);
-
-        let val = (out - r.yMin) / (r.yMax - r.yMin);
+        // Sigmoide del net: 0.5 justo en la frontera, para cualquier activación.
+        let val = 1 / (1 + Math.exp(-net));
         if (Number.isNaN(val) || !Number.isFinite(val)) val = 0.5;
         val = Math.max(0, Math.min(1, val));
 
@@ -660,7 +657,6 @@
   function drawTestPoint(plotW, plotH) {
     const x1 = neuron.inputs[0];
     const x2 = neuron.inputs[1];
-    const out = neuron.output;
 
     const px = xToPx(x1, plotW);
     const py = yToPx(x2, plotH);
@@ -679,7 +675,7 @@
     // Centro del punto de prueba
     ctx.beginPath();
     ctx.arc(px, py, 7.5, 0, Math.PI * 2);
-    ctx.fillStyle = out >= 0.5 ? "#2563eb" : "#dc2626"; // cambia de color según la predicción
+    ctx.fillStyle = neuron.netInput >= 0 ? "#2563eb" : "#dc2626"; // mismo criterio que la frontera (net = 0)
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2.5;
     ctx.fill();

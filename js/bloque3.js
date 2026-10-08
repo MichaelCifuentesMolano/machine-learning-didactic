@@ -7,7 +7,7 @@
   const INITIAL_INPUTS  = [1.0, -2.0];
   const INITIAL_WEIGHTS = [0.8, -1.2];
   const INITIAL_BIAS    = -0.5;
-  const INITIAL_ACTIVATION = "sigmoid";
+  const INITIAL_ACTIVATION = "binaryStep"; // regla clásica del perceptrón
 
   // Rango de visualización en el plano cartesiano
   const xMin = -6, xMax = 6;
@@ -205,6 +205,7 @@
     // Fallback: Quitar comandos LaTeX comunes para mostrar texto plano legible
     let plain = latex
       .replace(/\\text\{([^}]+)\}/g, "$1") // \text{hola} -> hola
+      .replace(/\\mathbf\{([^}]+)\}/g, "$1") // \mathbf{1.2} -> 1.2
       .replace(/\\cdot/g, "·")             // \cdot -> ·
       .replace(/\\Delta/g, "Δ")            // \Delta -> Δ
       .replace(/\\eta/g, "η")              // \eta -> η
@@ -539,8 +540,6 @@
     const w1 = neuron.weights[0];
     const w2 = neuron.weights[1];
     const b = neuron.bias;
-    const meta = neuron.activationMeta;
-    const r = meta.range;
 
     for (let i = 0; i < gridCount; i++) {
       const px = padL + i * cellW;
@@ -550,9 +549,8 @@
         const y = yMin + (j + 0.5) * (yMax - yMin) / gridCount;
 
         const net = x * w1 + y * w2 + b;
-        const out = meta.fn(net);
-
-        let val = (out - r.yMin) / (r.yMax - r.yMin);
+        // Sigmoide del net: 0.5 justo en la frontera, para cualquier activación.
+        let val = 1 / (1 + Math.exp(-net));
         if (Number.isNaN(val) || !Number.isFinite(val)) val = 0.5;
         val = Math.max(0, Math.min(1, val));
 
@@ -713,7 +711,6 @@
   function drawTestPoint(plotW, plotH) {
     const x1 = neuron.inputs[0];
     const x2 = neuron.inputs[1];
-    const out = neuron.output;
 
     const px = xToPx(x1, plotW);
     const py = yToPx(x2, plotH);
@@ -732,7 +729,7 @@
     // Centro del punto de prueba
     ctx.beginPath();
     ctx.arc(px, py, 7.5, 0, Math.PI * 2);
-    ctx.fillStyle = out >= 0.5 ? "#2563eb" : "#dc2626"; // cambia de color según la predicción
+    ctx.fillStyle = neuron.netInput >= 0 ? "#2563eb" : "#dc2626"; // mismo criterio que la frontera (net = 0)
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2.5;
     ctx.fill();
@@ -766,6 +763,7 @@
 
     // 3. Obtener la salida e y el target d
     const y = neuron.output;
+    const netBefore = neuron.netInput;
     const d = p.label;
     const e = d - y;
 
@@ -791,6 +789,11 @@
     });
 
     // 6. Actualizar paneles del DOM
+    // El panel Predicción/Error muestra la evaluación ANTES del ajuste
+    // (la que generó el error); render() ya pintó la salida posterior.
+    document.getElementById("output-value").textContent = y.toFixed(4);
+    document.getElementById("output-net").textContent = netBefore.toFixed(3);
+
     const targetValueEl = document.getElementById("target-value");
     if (targetValueEl) targetValueEl.textContent = d.toString();
 
@@ -833,11 +836,11 @@
         explanationEl.style.borderColor = "#22c55e";
         explanationEl.style.background = "#f0fdf4";
       } else if (e > 0) {
-        explanationText = `⚠️ <strong>Error positivo (d > y):</strong> La salida esperada era 1 pero se obtuvo ${y.toFixed(3)}. Los pesos y el bias se incrementan para aumentar el valor del Net Input en futuras evaluaciones de esta zona azul.`;
+        explanationText = `⚠️ <strong>Error positivo (d > y):</strong> La salida esperada era ${d} pero se obtuvo ${y.toFixed(3)}. Los pesos y el bias se incrementan para aumentar el valor del Net Input en futuras evaluaciones de esta zona azul.`;
         explanationEl.style.borderColor = "#3b82f6";
         explanationEl.style.background = "#eff6ff";
       } else {
-        explanationText = `⚠️ <strong>Error negativo (d < y):</strong> La salida esperada era 0 pero se obtuvo ${y.toFixed(3)}. Los pesos y el bias disminuyen para reducir el valor del Net Input en futuras evaluaciones de esta zona roja.`;
+        explanationText = `⚠️ <strong>Error negativo (d < y):</strong> La salida esperada era ${d} pero se obtuvo ${y.toFixed(3)}. Los pesos y el bias disminuyen para reducir el valor del Net Input en futuras evaluaciones de esta zona roja.`;
         explanationEl.style.borderColor = "#ef4444";
         explanationEl.style.background = "#fef2f2";
       }

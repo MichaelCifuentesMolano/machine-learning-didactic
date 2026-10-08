@@ -170,12 +170,15 @@
    * @param {NeuronUI} ui
    */
   function randomizeWeights(neuron, ui) {
-    // Pesos: rango [-5, 5].
-    neuron.weights.forEach((_, i) => {
-      neuron.setWeight(i, randomBetween(-5, 5));
+    // Lote: una sola evaluación en el historial.
+    neuron.batchUpdate(() => {
+      // Pesos: rango [-5, 5].
+      neuron.weights.forEach((_, i) => {
+        neuron.setWeight(i, randomBetween(-5, 5));
+      });
+      // Bias: rango [-5, 5].
+      neuron.setBias(randomBetween(-5, 5));
     });
-    // Bias: rango [-5, 5].
-    neuron.setBias(randomBetween(-5, 5));
     ui.syncControls();
   }
 

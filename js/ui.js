@@ -256,7 +256,7 @@
           label: `x${i + 1}`,
           value, min: -10, max: 10, step: 0.01, decimals: 2,
           color: this.colors.input,
-          onChange: (v) => this.neuron.setInput(i, v)
+          onChange: (v, transient) => this.neuron.setInput(i, v, transient)
         });
         panel.appendChild(row);
         this._inputRows.push(row);
@@ -272,7 +272,7 @@
           label: `w${i + 1}`,
           value, min: -5, max: 5, step: 0.001, decimals: 3,
           color: this.colors.weight,
-          onChange: (v) => this.neuron.setWeight(i, v)
+          onChange: (v, transient) => this.neuron.setWeight(i, v, transient)
         });
         panel.appendChild(row);
         this._weightRows.push(row);
@@ -287,7 +287,7 @@
         value: this.neuron.bias,
         min: -5, max: 5, step: 0.001, decimals: 3,
         color: this.colors.bias,
-        onChange: (v) => this.neuron.setBias(v)
+        onChange: (v, transient) => this.neuron.setBias(v, transient)
       });
       panel.appendChild(this._biasRow);
     }
