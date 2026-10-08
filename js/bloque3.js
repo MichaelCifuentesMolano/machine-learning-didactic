@@ -1,3 +1,9 @@
+/* ===========================================================================
+ * bloque3.js — Regla de aprendizaje del perceptrón.
+ * También lo usa bloque4.html: si la página tiene #dataset-select, #stats o
+ * #btn-learn-many, se activan el selector de datasets no lineales, las
+ * estadísticas por época y el entrenamiento de varias épocas.
+ * =========================================================================== */
 (function () {
   "use strict";
 
@@ -69,26 +75,94 @@
     return mean + stdDev * randStdNormal;
   }
 
+  /** Crea un punto recortado al área visible del plano. */
+  function point(x, y, label) {
+    return {
+      x: Math.max(xMin + 0.5, Math.min(xMax - 0.5, x)),
+      y: Math.max(yMin + 0.5, Math.min(yMax - 0.5, y)),
+      label
+    };
+  }
+
+  /* Conjuntos de datos (40 puntos cada uno). Clase 0 = rojos, 1 = azules.
+   * Solo "separable" puede separarse con una recta; el resto ilustra el
+   * límite del perceptrón (Bloque 4). */
+  const DATASETS = {
+    // Dos nubes: rojos en (-2,-2), azules en (2,2).
+    separable: () => {
+      const pts = [];
+      for (let i = 0; i < 20; i++) pts.push(point(randomNormal(-2, 1.2), randomNormal(-2, 1.2), 0));
+      for (let i = 0; i < 20; i++) pts.push(point(randomNormal(2, 1.2), randomNormal(2, 1.2), 1));
+      return pts;
+    },
+    // XOR: azules en los cuadrantes II y IV, rojos en I y III.
+    xor: () => {
+      const pts = [];
+      [[-2.5, 2.5, 1], [2.5, -2.5, 1], [2.5, 2.5, 0], [-2.5, -2.5, 0]].forEach(([cx, cy, label]) => {
+        for (let i = 0; i < 10; i++) pts.push(point(randomNormal(cx, 0.9), randomNormal(cy, 0.9), label));
+      });
+      return pts;
+    },
+    // Círculos: azules en un disco central, rojos en un anillo alrededor.
+    circles: () => {
+      const pts = [];
+      for (let i = 0; i < 40; i++) {
+        const inner = i < 20;
+        const r = inner ? Math.random() * 1.8 : 3.4 + Math.random() * 1.6;
+        const t = Math.random() * 2 * Math.PI;
+        pts.push(point(r * Math.cos(t), r * Math.sin(t), inner ? 1 : 0));
+      }
+      return pts;
+    },
+    // Lunas: dos medias lunas entrelazadas.
+    moons: () => {
+      const pts = [];
+      for (let i = 0; i < 20; i++) {
+        const t = Math.PI * Math.random();
+        pts.push(point(3 * Math.cos(t) - 1.5 + randomNormal(0, 0.3), 3 * Math.sin(t) - 0.75 + randomNormal(0, 0.3), 0));
+        pts.push(point(3 * (1 - Math.cos(t)) - 1.5 + randomNormal(0, 0.3), 3 * (0.5 - Math.sin(t)) - 0.75 + randomNormal(0, 0.3), 1));
+      }
+      return pts;
+    }
+  };
+
   function generateDataset() {
-    dataset = [];
-    const N = 20; // 20 puntos por clase
-    // Clase 0 (Rojos): Centrados en (-2, -2)
-    for (let i = 0; i < N; i++) {
-      dataset.push({
-        x: Math.max(xMin + 0.5, Math.min(xMax - 0.5, randomNormal(-2.0, 1.2))),
-        y: Math.max(yMin + 0.5, Math.min(yMax - 0.5, randomNormal(-2.0, 1.2))),
-        label: 0
-      });
-    }
-    // Clase 1 (Azules): Centrados en (2, 2)
-    for (let i = 0; i < N; i++) {
-      dataset.push({
-        x: Math.max(xMin + 0.5, Math.min(xMax - 0.5, randomNormal(2.0, 1.2))),
-        y: Math.max(yMin + 0.5, Math.min(yMax - 0.5, randomNormal(2.0, 1.2))),
-        label: 1
-      });
-    }
+    const select = document.getElementById("dataset-select");
+    dataset = DATASETS[select ? select.value : "separable"]();
     currentTrainingIndex = 0;
+    epochCount = 0;
+    epochLog = [];
+  }
+
+  /* ----------------------------------------------------------------------
+   * Estadísticas de entrenamiento (solo si la página tiene #stats).
+   * -------------------------------------------------------------------- */
+  let epochCount = 0;
+  let epochLog = [];  // % de aciertos al final de cada época
+
+  /** Nº de puntos clasificados correctamente (mismo criterio que la frontera). */
+  function countCorrect() {
+    const [w1, w2] = neuron.weights;
+    return dataset.filter((p) => (p.x * w1 + p.y * w2 + neuron.bias >= 0 ? 1 : 0) === p.label).length;
+  }
+
+  function updateStats() {
+    const el = document.getElementById("stats");
+    if (!el || !neuron) return;
+    const ok = countCorrect();
+    el.innerHTML =
+      `<div>Época: <strong>${epochCount}</strong> · Aciertos: <strong>${ok}/${dataset.length}</strong> ` +
+      `(${Math.round((100 * ok) / dataset.length)}%)</div>` +
+      `<div class="epoch-log">${epochLog.map((a, i) => `<span>Ép ${i + 1}: ${a}%</span>`).join("")}</div>`;
+  }
+
+  /** Registra el fin de una época. Devuelve true si clasifica todo bien. */
+  function finishEpoch() {
+    const ok = countCorrect();
+    epochCount++;
+    epochLog.push(Math.round((100 * ok) / dataset.length));
+    updateStats();
+    return ok === dataset.length;
   }
 
   /* ----------------------------------------------------------------------
@@ -852,10 +926,43 @@
   }
 
   function setSimButtonsState(disabled) {
-    document.getElementById("btn-learn-once").disabled = disabled;
-    document.getElementById("btn-learn-epoch").disabled = disabled;
-    document.getElementById("btn-regenerate").disabled = disabled;
-    document.getElementById("btn-reset").disabled = disabled;
+    ["btn-learn-once", "btn-learn-epoch", "btn-learn-many", "btn-regenerate", "btn-reset", "dataset-select"]
+      .forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = disabled;
+      });
+  }
+
+  /**
+   * Entrena época tras época (sin animar punto a punto) hasta clasificar
+   * todo bien o agotar `maxEpochs`. Muestra el veredicto en la explicación.
+   */
+  function trainManyEpochs(maxEpochs) {
+    if (epochTimer) clearInterval(epochTimer);
+    setSimButtonsState(true);
+    let done = 0;
+
+    epochTimer = setInterval(() => {
+      dataset.forEach((_, i) => runLearningStep(i, true));
+      done++;
+      const converged = finishEpoch();
+      if (!converged && done < maxEpochs) return;
+
+      clearInterval(epochTimer);
+      epochTimer = null;
+      setSimButtonsState(false);
+      highlightedPoint = null;
+
+      const explanationEl = document.getElementById("learning-explanation");
+      if (explanationEl) {
+        explanationEl.innerHTML = converged
+          ? `✅ <strong>¡Convergió!</strong> Tras ${epochCount} épocas la recta separa todos los puntos.`
+          : `❌ <strong>No converge.</strong> Tras ${done} épocas más sigue fallando puntos: la recta solo ` +
+            `rota y se desplaza de un lado a otro. Ninguna recta puede separar estas clases.`;
+        explanationEl.style.borderColor = converged ? "#22c55e" : "#ef4444";
+        explanationEl.style.background = converged ? "#f0fdf4" : "#fef2f2";
+      }
+    }, 250);
   }
 
   function trainEpochAnimated() {
@@ -875,6 +982,7 @@
         epochTimer = null;
         setSimButtonsState(false);
         highlightedPoint = null;
+        finishEpoch();
         return;
       }
       runLearningStep(index, true); // transient = true durante el barrido
@@ -922,6 +1030,9 @@
 
     // Disparar animación visual de flujo de la neurona
     animateFlow(svg);
+
+    // Aciertos con los pesos actuales (Bloque 4)
+    updateStats();
   }
 
   function syncControlSliders() {
@@ -1094,7 +1205,7 @@
     });
 
     // 11. Botones de la barra de herramientas
-    document.getElementById("btn-regenerate").addEventListener("click", () => {
+    const regenerate = () => {
       if (epochTimer) {
         clearInterval(epochTimer);
         epochTimer = null;
@@ -1102,8 +1213,12 @@
       }
       highlightedPoint = null;
       generateDataset();
-    });
-    
+      updateStats();
+    };
+    document.getElementById("btn-regenerate").addEventListener("click", regenerate);
+    const datasetSelect = document.getElementById("dataset-select");
+    if (datasetSelect) datasetSelect.addEventListener("change", regenerate);
+
     document.getElementById("btn-reset").addEventListener("click", () => {
       if (epochTimer) {
         clearInterval(epochTimer);
@@ -1111,6 +1226,8 @@
         setSimButtonsState(false);
       }
       highlightedPoint = null;
+      epochCount = 0;
+      epochLog = [];
       neuron.batchUpdate(() => {
         neuron.setWeight(0, INITIAL_WEIGHTS[0]);
         neuron.setWeight(1, INITIAL_WEIGHTS[1]);
@@ -1130,11 +1247,15 @@
       runLearningStep(currentTrainingIndex, false);
       // Avanzar el índice de forma cíclica
       currentTrainingIndex = (currentTrainingIndex + 1) % dataset.length;
+      if (currentTrainingIndex === 0) finishEpoch();
     });
 
     document.getElementById("btn-learn-epoch").addEventListener("click", () => {
       trainEpochAnimated();
     });
+
+    const btnMany = document.getElementById("btn-learn-many");
+    if (btnMany) btnMany.addEventListener("click", () => trainManyEpochs(20));
 
     // 12. Pintado inicial completo
     render(elements.neuronSvg, elements);

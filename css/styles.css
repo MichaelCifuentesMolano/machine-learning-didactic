@@ -457,9 +457,10 @@ body {
   flex-direction: column;
   gap: 10px;
   min-height: 0;
+  overflow-y: auto;
 }
 .panel-plane {
-  flex: 1;
+  flex: 1 0 auto;   /* no se encoge bajo los paneles de abajo (Bloque 4) */
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -488,3 +489,45 @@ body {
     height: 320px;
   }
 }
+
+/* --- Bloque 4: aciertos por época y explicación --------------------- */
+.stats { font-size: .9rem; color: var(--text); }
+.epoch-log { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.epoch-log span {
+  font-size: .72rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+}
+.why-text { margin: 0 0 6px; font-size: .84rem; color: #475569; line-height: 1.45; }
+
+/* --- Barra de navegación entre bloques (compartida por los bloques) ----- */
+.block-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+.block-nav a {
+  font-size: .85rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background .12s ease, color .12s ease;
+}
+.block-nav a:hover { background: #f1f5f9; color: var(--text); }
+.block-nav a.active {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.block-nav .nav-home { margin-right: 6px; }
+
+/* Variables matemáticas en títulos: no pasar a mayúsculas (η → Η, x → X). */
+.panel-title .math { text-transform: none; }

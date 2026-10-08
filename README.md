@@ -8,7 +8,7 @@ El proyecto es **100% estático**: basta con hacer doble clic en `index.html` en
 
 ## 📚 Bloques Didácticos
 
-El curso se divide en tres bloques progresivos:
+El curso se divide en cuatro bloques progresivos:
 
 ### 1. [Bloque 1: La Neurona / Perceptrón](bloque1.html)
 * **Objetivo:** Comprender cómo una neurona combina entradas con pesos y bias para calcular un valor de entrada neto (*Net Input*) y aplicar una función de activación.
@@ -33,6 +33,14 @@ El curso se divide en tres bloques progresivos:
   * Tasa de aprendizaje ($\eta$) configurable mediante controles deslizantes.
   * **Aprender una vez:** Evalúa secuencialmente los puntos del plano, calcula el error ($e = d - y$) y muestra paso a paso las fórmulas de actualización de la regla del perceptrón ($\Delta w_i = \eta \cdot e \cdot x_i$, $\Delta b = \eta \cdot e$) en LaTeX profesional.
   * **Entrenar época:** Ejecuta el entrenamiento de forma animada en todo el conjunto de datos, permitiendo visualizar literalmente cómo la frontera de decisión se ajusta sola hasta lograr separar las clases.
+
+### 4. [Bloque 4: El Límite del Perceptrón](bloque4.html)
+* **Objetivo:** Descubrir que una sola neurona solo puede separar clases con una recta, y que por eso falla en problemas como XOR.
+* **Características:**
+  * Selector de datos: **XOR**, **círculos**, **lunas** y un conjunto **separable** de control.
+  * **Entrenar 20 épocas:** entrena hasta clasificar todo bien o agotar las épocas, y da el veredicto (converge / no converge).
+  * Panel de aciertos actuales y porcentaje de aciertos por época, para ver que en XOR la precisión oscila sin llegar al 100 %.
+  * Reutiliza el motor del Bloque 3 (`bloque3.js`).
 
 ---
 
@@ -66,6 +74,7 @@ Machine Learning Didactic/
 ├── bloque1.html        # Simulación de la neurona básica
 ├── bloque2.html        # Visualización de la frontera de decisión
 ├── bloque3.html        # Entrenamiento con la regla del perceptrón
+├── bloque4.html        # Límite del perceptrón (XOR, círculos, lunas)
 ├── css/
 │   ├── index.css       # Estilos específicos del índice
 │   └── styles.css      # Estilos comunes de los bloques didácticos
@@ -75,7 +84,7 @@ Machine Learning Didactic/
     ├── ui.js                   # Vista interactiva del Bloque 1 (NeuronUI)
     ├── app.js                  # Controlador principal del Bloque 1
     ├── bloque2.js              # Controlador e interacción del Bloque 2
-    └── bloque3.js              # Controlador del aprendizaje del Bloque 3
+    └── bloque3.js              # Controlador del aprendizaje (Bloques 3 y 4)
 ```
 
 ---

@@ -27,6 +27,7 @@
     <a href="bloque1.html" class="nav-link">Bloque 1 · Neurona</a>
     <a href="bloque2.html" class="nav-link active">Bloque 2 · Frontera de decisión</a>
     <a href="bloque3.html" class="nav-link">Bloque 3 · Regla de aprendizaje</a>
+    <a href="bloque4.html" class="nav-link">Bloque 4 · Límite del perceptrón</a>
   </nav>
 
   <!-- ====================================================================
@@ -60,17 +61,17 @@
       <!-- Controles deslizantes (Inputs/Pesos/Bias) -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
         <div class="panel panel-compact">
-          <h2 class="panel-title" style="--accent:#3b82f6">Entradas (x)</h2>
+          <h2 class="panel-title" style="--accent:#3b82f6">Entradas (<span class="math">x</span>)</h2>
           <div id="inputs-panel" class="ctrl-list"></div>
         </div>
 
         <div class="panel panel-compact">
-          <h2 class="panel-title" style="--accent:#f97316">Pesos (w)</h2>
+          <h2 class="panel-title" style="--accent:#f97316">Pesos (<span class="math">w</span>)</h2>
           <div id="weights-panel" class="ctrl-list"></div>
         </div>
 
         <div class="panel panel-compact">
-          <h2 class="panel-title" style="--accent:#a855f7">Bias (b)</h2>
+          <h2 class="panel-title" style="--accent:#a855f7">Bias (<span class="math">b</span>)</h2>
           <div id="bias-panel" class="ctrl-list"></div>
         </div>
       </div>
@@ -78,7 +79,7 @@
       <!-- Salida y Ecuación -->
       <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; min-height: 120px;">
         <div class="panel panel-compact output-panel" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-          <h2 class="panel-title" style="--accent:#ef4444; width: 100%;">Salida (y)</h2>
+          <h2 class="panel-title" style="--accent:#ef4444; width: 100%;">Salida (<span class="math">y</span>)</h2>
           <div class="output-value" id="output-value">—</div>
           <ul class="output-meta">
             <li><span>Función:</span> <strong id="output-activation">—</strong></li>
@@ -111,7 +112,7 @@
          -------------------------------------------------------------- -->
     <section class="col-zona2">
       <div class="panel panel-plane">
-        <h2 class="panel-title" style="--accent:#22c55e">Frontera de decisión: x₁·w₁ + x₂·w₂ + b = 0</h2>
+        <h2 class="panel-title" style="--accent:#22c55e">Frontera de decisión: <span class="math">x₁·w₁ + x₂·w₂ + b = 0</span></h2>
         <canvas id="plane-canvas" class="plane-canvas"></canvas>
       </div>
     </section>

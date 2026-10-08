@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <!--
-  bloque3.html — Simulador educativo de la regla de aprendizaje del perceptrón.
+  bloque4.html — El límite del perceptrón (XOR y datos no lineales).
 
-  Estructura de dos columnas (Zona 1 y Zona 2):
-    - css/styles.css   → estilos compartidos y clases del plano.
-    - js/activationFunctions.js → catálogo de funciones.
-    - js/neuron.js     → modelo (clase Neuron, OOP).
-    - js/bloque3.js    → controlador de la regla del perceptrón y visualización.
+  Reutiliza el motor del Bloque 3 (js/bloque3.js). Esta página añade:
+    - #dataset-select → XOR, círculos, lunas o separable (control).
+    - #btn-learn-many → entrena hasta 20 épocas o hasta converger.
+    - #stats          → aciertos actuales y % de aciertos por época.
 -->
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bloque 3 · La Regla del Perceptrón</title>
+  <title>Bloque 4 · El Límite del Perceptrón</title>
   <link rel="stylesheet" href="css/styles.css" />
   <!-- KaTeX para renderizado de ecuaciones tipo LaTeX -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -26,17 +25,17 @@
     <a href="index.html" class="nav-home">🏠 Inicio</a>
     <a href="bloque1.html" class="nav-link">Bloque 1 · Neurona</a>
     <a href="bloque2.html" class="nav-link">Bloque 2 · Frontera de decisión</a>
-    <a href="bloque3.html" class="nav-link active">Bloque 3 · Regla de aprendizaje</a>
-    <a href="bloque4.html" class="nav-link">Bloque 4 · Límite del perceptrón</a>
+    <a href="bloque3.html" class="nav-link">Bloque 3 · Regla de aprendizaje</a>
+    <a href="bloque4.html" class="nav-link active">Bloque 4 · Límite del perceptrón</a>
   </nav>
 
   <!-- ====================================================================
        Cabecera
        ================================================================= -->
   <header class="app-header">
-    <h1>🧠 Bloque 3 · La Regla de Aprendizaje del Perceptrón</h1>
+    <h1>🧠 Bloque 4 · El Límite del Perceptrón (XOR)</h1>
     <p class="subtitle">
-      Observa cómo la neurona ajusta de forma autónoma sus pesos y bias para clasificar correctamente los puntos del plano.
+      Entrena la neurona sobre datos que una recta no puede separar y observa por qué una sola neurona no basta.
     </p>
   </header>
 
@@ -44,8 +43,18 @@
        Barra de acciones
        ================================================================= -->
   <section class="toolbar">
+    <label class="inputs-count">
+      Datos:
+      <select id="dataset-select">
+        <option value="xor" selected>XOR</option>
+        <option value="circles">Círculos</option>
+        <option value="moons">Lunas</option>
+        <option value="separable">Separable (control)</option>
+      </select>
+    </label>
     <button id="btn-learn-once" type="button" style="border-color:#a855f7; background:#faf5ff;">🎯 Aprender una vez</button>
     <button id="btn-learn-epoch" type="button" style="border-color:#22c55e; background:#f0fdf4;">🔄 Entrenar época</button>
+    <button id="btn-learn-many" type="button" style="border-color:#ef4444; background:#fef2f2;">⏩ Entrenar 20 épocas</button>
     <button id="btn-regenerate" type="button">🎲 Regenerar puntos</button>
     <button id="btn-reset"     type="button">♻️ Reiniciar pesos</button>
   </section>
@@ -59,7 +68,7 @@
          ZONA 1 (Izquierda): Controles, Fórmulas, Neurona y Activación.
          -------------------------------------------------------------- -->
     <aside class="col-zona1">
-      
+
       <!-- Controles deslizantes (Inputs / Pesos / Bias / Tasa de Aprendizaje) -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px;">
         <div class="panel panel-compact">
@@ -112,7 +121,7 @@
         </div>
       </div>
 
-      <!-- Panel de la Regla del Perceptrón (Ecuación y Explicación) -->
+      <!-- Panel de la Regla del Perceptrón (la misma del Bloque 3) -->
       <div class="panel panel-compact" style="border-color: #a855f7; background: #faf5ff;">
         <h2 class="panel-title" style="--accent:#a855f7">Regla del Perceptrón: <span class="math">Δw = η · e · x   y   Δb = η · e</span></h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px;">
@@ -126,7 +135,7 @@
           </div>
         </div>
         <div id="learning-explanation" style="font-size: 0.82rem; color: #475569; padding: 4px 6px; border-left: 3px solid #a855f7; background: #f3e8ff;">
-          Haz clic en <strong>Aprender una vez</strong> para ver cómo se calculan y aplican los ajustes de pesos y bias sobre un punto del plano.
+          Pulsa <strong>Entrenar 20 épocas</strong> y observa si la neurona logra separar los puntos.
         </div>
       </div>
 
@@ -144,23 +153,43 @@
     </aside>
 
     <!-- ----------------------------------------------------------------
-         ZONA 2 (Derecha): Plano Cartesiano interactivo con la frontera.
+         ZONA 2 (Derecha): Plano, estadísticas y explicación.
          -------------------------------------------------------------- -->
     <section class="col-zona2">
       <div class="panel panel-plane">
         <h2 class="panel-title" style="--accent:#22c55e">Plano de Decisión: <span class="math">x₁·w₁ + x₂·w₂ + b = 0</span></h2>
         <canvas id="plane-canvas" class="plane-canvas"></canvas>
       </div>
+
+      <div class="panel panel-compact">
+        <h2 class="panel-title" style="--accent:#ef4444">Aciertos por época</h2>
+        <div id="stats" class="stats"></div>
+      </div>
+
+      <div class="panel panel-compact">
+        <h2 class="panel-title" style="--accent:#6b7280">¿Por qué no aprende?</h2>
+        <p class="why-text">
+          Una neurona solo puede dibujar <strong>una recta</strong>: todo lo que queda a un lado es azul
+          y lo del otro lado es rojo. En XOR los azules están en dos esquinas opuestas
+          (arriba-izquierda y abajo-derecha), así que cualquier recta deja siempre algún grupo
+          del lado equivocado. Por eso ninguna recta supera ~75 % de aciertos (3 de los 4 grupos) y la recta
+          oscila sin estabilizarse.
+        </p>
+        <p class="why-text">
+          Prueba <em>Separable (control)</em>: ahí sí converge. La salida a XOR es combinar
+          <strong>varias neuronas</strong> (dos rectas) en una capa oculta → Bloque 5.
+        </p>
+      </div>
     </section>
 
   </main>
 
   <footer class="app-footer">
-    <small>Hecho con HTML + CSS + Vanilla JS · Demostración interactiva del algoritmo de aprendizaje del perceptrón.</small>
+    <small>Hecho con HTML + CSS + Vanilla JS · Por qué una sola neurona no basta.</small>
   </footer>
 
   <!-- ====================================================================
-       Scripts
+       Scripts (reutiliza el motor del Bloque 3)
        ================================================================= -->
   <script src="js/activationFunctions.js"></script>
   <script src="js/neuron.js"></script>
